@@ -1,0 +1,41 @@
+
+####
+# Following broad guides from
+# https://istio.io/docs/setup/install/
+
+####
+# check locations supporting AKS
+# az provider list --query "[?namespace=='Microsoft.ContainerService'].resourceTypes[] | [?resourceType=='managedClusters'].locations[]" -o tsv
+
+####
+# check the minimum supported version - I've chosen Cardiff / UK West
+# az aks get-versions --location "ukwest" --query "orchestrators[].orchestratorVersion"
+
+####
+# Set up the resource group to make clear down straight forward
+# then set up the actual cluster
+az group create --name kubeTestGroup --location "ukwest"
+az aks create 	--resource-group kubeTestGroup --name myAKSCluster --node-count 2 --node-vm-size "Standard_DS2_v2" --nodepool-name "kubepool1" --kubernetes-version 1.17.0 --generate-ssh-keys
+
+####
+# set ~/.kube/config
+az aks get-credentials --resource-group kubeTestGroup --name myAKSCluster
+
+####
+# fetch Istio (works on Linux)
+curl -L https://istio.io/downloadIstio | sh -
+
+# then change into the dir
+# 
+# cd istio-1.4.3
+#
+# and run the commands recommended by the previous curl / sh
+# add the path to .bashrc / .profile if prefer
+#
+# export PATH="$PATH:/home/shaun/Istio/istio-1.4.3/bin"
+# istioctl verify-install
+#
+# there is also a command to set up autocompletion in the tools dir (source <DIR>/istioctl.bash)
+# 
+#
+
